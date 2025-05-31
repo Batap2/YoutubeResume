@@ -1,5 +1,18 @@
 const browserApi = (typeof browser !== "undefined") ? browser : chrome;
 
+function ifKeysDoNotExists() {
+    browserApi.storage.local.get('resume', function (result) {
+        if (!result.resume) {
+            browserApi.storage.local.set({ 'resume': true });
+        }
+    });
+    browserApi.storage.local.get('newUrl', function (result) {
+        if (!result.resume) {
+            browserApi.storage.local.set({ 'newUrl': "" });
+        }
+    });
+}
+
 function checkResume() {
     const currentUrl = window.location.href;
     if (!currentUrl.includes("youtube.com/watch")) return;
@@ -9,18 +22,18 @@ function checkResume() {
         console.log(currentUrl);
         console.log(result.resume);
         if (result.resume == currentUrl) {
-            browserApi.storage.local.set({ resume: ""});
+            browserApi.storage.local.set({ resume: "" });
             return;
         }
-        
-        browserApi.storage.local.set({ resume: ""});
-    
+
+        browserApi.storage.local.set({ resume: "" });
+
         browserApi.storage.local.get("youtubeHistory", (data) => {
             const history = data.youtubeHistory || [];
             const match = history.find(item => currentUrl.includes(item.url.split("&")[0]));
-    
+
             if (!match || !match.time || match.time < 5) return;
-    
+
             const shouldResume = confirm("Would you like to resume where you left off?");
             if (shouldResume) {
                 const video = document.querySelector("video");
@@ -42,7 +55,7 @@ function checkResume() {
     });
 }
 
-function test(){
+function test() {
     const banner = document.createElement("div");
     banner.textContent = "_______________";
     banner.style.position = "fixed";
@@ -60,7 +73,8 @@ function test(){
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "refresh") {
-        browserApi.storage.local.get("newUrl", (data) => {  
+        ifKeysDoNotExists();
+        browserApi.storage.local.get("newUrl", (data) => {
             //test();
             checkResume();
         });
@@ -68,4 +82,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 });
 
+ifKeysDoNotExists();
 checkResume();
