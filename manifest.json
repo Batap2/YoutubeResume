@@ -3,6 +3,11 @@
     "name": "Resume YouTube Playback",
     "version": "1.0",
     "description": "Automatically saves YouTube video progress and lets you resume playback.",
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "mon-extension@example.com"
+        }
+    },
     "permissions": [
         "storage",
         "tabs",
@@ -17,7 +22,9 @@
         "default_icon": "icons/icon.png"
     },
     "background": {
-        "scripts": ["background.js"]
+        "scripts": [
+            "background.js"
+        ]
     },
     "content_scripts": [
         {
